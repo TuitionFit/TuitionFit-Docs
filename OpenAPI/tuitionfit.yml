@@ -1,0 +1,877 @@
+swagger: '2.0'
+info:
+  version: v0
+  title: TuitionFit
+host: localhost:9163
+schemes:
+  - https
+paths:
+  /api/partner/connections:
+    get:
+      tags:
+        - PartnerConnections
+      summary: Gets all connections for the calling service account.
+      operationId: PartnerConnections_GetConnections
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+      parameters:
+        - name: state
+          in: query
+          description: An optional ConnectionState by which to filter the connections (Pending, Accepted, Rejected, Canceled, Revoked).
+          required: false
+          type: string
+        - name: studentId
+          in: query
+          description: An optional student ID for which to search.
+          required: false
+          type: string
+        - name: studentEmail
+          in: query
+          description: An optional student Email for which to search.
+          required: false
+          type: string
+      responses:
+        '200':
+          description: The request completed successfully
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ConnectionStatus'
+        '400':
+          description: The specified state is not a valid state, or the specified student id is not in a valid format
+    post:
+      tags:
+        - PartnerConnections
+      summary: Creates a new connection.
+      operationId: PartnerConnections_CreateConnection
+      consumes:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+      parameters:
+        - name: request
+          in: body
+          description: The connection request.
+          required: true
+          schema:
+            $ref: '#/definitions/CreateConnectionRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: The request completed successfully
+          schema:
+            $ref: '#/definitions/ConnectionStatus'
+        '400':
+          description: The request body is invalid, or the specified scope is not a valid scope
+          schema:
+            type: string
+        '404':
+          description: The specified student email did not match a known student
+        '409':
+          description: A connection to the specified student already exists
+  /api/partner/connections/{id}:
+    get:
+      tags:
+        - PartnerConnections
+      summary: Gets a single connection by id.
+      operationId: PartnerConnections_GetConnection
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the connection.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The request completed successfully
+          schema:
+            $ref: '#/definitions/ConnectionStatus'
+        '400':
+          description: The specified connection id is not in a valid format
+        '404':
+          description: The specified connection id did not match a known connection
+    delete:
+      tags:
+        - PartnerConnections
+      summary: Cancels or revokes an existing connection.
+      operationId: PartnerConnections_TerminateConnection
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the connection.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '204':
+          description: The request completed successfully
+        '400':
+          description: The specified connection id is not in a valid format
+        '404':
+          description: The specified connection id did not match a known connection
+  /api/partner/health:
+    get:
+      tags:
+        - PartnerHealth
+      summary: Checks the health of the Partner API.
+      operationId: PartnerHealth_Index
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+      responses:
+        '200':
+          description: The API is operating normally
+          schema:
+            type: string
+        '500':
+          description: The API is experiencing an outage
+          schema:
+            type: string
+  /api/partner/schools:
+    get:
+      tags:
+        - PartnerSchools
+      summary: Gets a list of all known schools.
+      operationId: PartnerSchools_Index
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+      parameters:
+        - name: nameSearchFilter
+          in: query
+          description: An optional name (or partial name) by which to filter the schools.
+          required: false
+          type: string
+        - name: stateAbbreviation
+          in: query
+          description: An optional two character US state abbreviation by which to filter the schools.
+          required: false
+          type: string
+      responses:
+        '200':
+          description: The request completed successfully
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/School'
+        '400':
+          description: The specified state is not a valid two character US state abbreviation
+  /api/partner/schools/{ipedsid}:
+    get:
+      tags:
+        - PartnerSchools
+      summary: Gets a school by its IPEDS Id.
+      operationId: PartnerSchools_Get
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+      parameters:
+        - name: ipedsid
+          in: path
+          description: The IPEDS Id of the school to retrieve.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The request completed successfully
+          schema:
+            $ref: '#/definitions/School'
+        '404':
+          description: The specified IPEDS id did not match a known school
+  /api/partner/students:
+    get:
+      tags:
+        - PartnerStudents
+      summary: Gets all students to which the calling user has an approved connection.
+      operationId: PartnerStudents_GetStudents
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+      parameters:
+        - name: email
+          in: query
+          description: An optional email search string by which to filter the students.
+          required: false
+          type: string
+      responses:
+        '200':
+          description: The request completed successfully
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Student'
+    post:
+      tags:
+        - PartnerStudents
+      summary: Creates a new student.
+      operationId: PartnerStudents_CreateStudent
+      consumes:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+      parameters:
+        - name: request
+          in: body
+          description: The student request.
+          required: true
+          schema:
+            $ref: '#/definitions/CreateStudentRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: The request completed successfully
+          schema:
+            $ref: '#/definitions/Student'
+        '400':
+          description: The request body is invalid
+          schema:
+            type: string
+        '409':
+          description: A student with the specified email address already exists
+  /api/partner/students/{id}:
+    get:
+      tags:
+        - PartnerStudents
+      summary: Gets a single student by id.
+      operationId: PartnerStudents_GetStudent
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the student.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The request completed successfully
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Student'
+        '400':
+          description: The specified student id is not in a valid format
+        '404':
+          description: The specified student id did not match a connected student
+    put:
+      tags:
+        - PartnerStudents
+      summary: Updates a student.
+      operationId: PartnerStudents_UpdateStudent
+      consumes:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the student.
+          required: true
+          type: string
+        - name: request
+          in: body
+          description: The update request.
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateStudentRequest'
+      responses:
+        '200':
+          description: The request completed successfully
+          schema:
+            $ref: '#/definitions/Student'
+        '400':
+          description: The request body is invalid, or the specified student id is not in a valid format
+          schema:
+            type: string
+        '403':
+          description: The connection to the student does not have a ReadWrite scope
+        '404':
+          description: The specified student id did not match a connected student
+  /api/partner/students/{id}/letters:
+    get:
+      tags:
+        - PartnerStudents
+      summary: Gets all letters for the specified student.
+      operationId: PartnerStudents_GetStudentLetters
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the student.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The request completed successfully
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Letter'
+        '400':
+          description: The specified student id is not in a valid format
+          schema:
+            type: string
+        '404':
+          description: The specified student id did not match a connected student
+    post:
+      tags:
+        - PartnerStudents
+      summary: Creates a student letter.
+      operationId: PartnerStudents_CreateStudentLetter
+      consumes:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the student.
+          required: true
+          type: string
+        - name: request
+          in: body
+          description: The create request.
+          required: true
+          schema:
+            $ref: '#/definitions/CreateLetterRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: The request completed successfully
+          schema:
+            $ref: '#/definitions/Letter'
+        '400':
+          description: The request body is invalid, the specified student id is not in a valid format, the specified IPEDS id did not match a known school, or the specified image base 64 data is invalid or corrupt
+          schema:
+            type: string
+        '403':
+          description: The connection to the student does not have a ReadWrite scope
+        '404':
+          description: The specified student id did not match a connected student
+  /api/partner/students/{studentId}/letters/{letterId}:
+    get:
+      tags:
+        - PartnerStudents
+      summary: Gets a single letter for the specified student, by id.
+      operationId: PartnerStudents_GetStudentLetter
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+      parameters:
+        - name: studentId
+          in: path
+          description: The unique identifier for the student.
+          required: true
+          type: string
+        - name: letterId
+          in: path
+          description: The unique identifier for the letter.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The request completed successfully
+          schema:
+            $ref: '#/definitions/Letter'
+        '400':
+          description: The one or more of the specified student or letter ids is not in a valid format
+          schema:
+            type: string
+        '404':
+          description: The specified student id did not match a connected student, or the specified letter id did not match a known letter
+  /api/partner/students/{studentId}/letters/{letterId}/images:
+    get:
+      tags:
+        - PartnerStudents
+      summary: Gets a URL for the images for a single letter for the specified student, by id.
+      operationId: PartnerStudents_GetStudentLetterImages
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+        - application/xml
+        - text/xml
+      parameters:
+        - name: studentId
+          in: path
+          description: The unique identifier for the student.
+          required: true
+          type: string
+        - name: letterId
+          in: path
+          description: The unique identifier for the letter.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The request completed successfully
+          schema:
+            $ref: '#/definitions/LetterImages'
+        '400':
+          description: The one or more of the specified student or letter ids is not in a valid format
+          schema:
+            type: string
+        '404':
+          description: The specified student id did not match a connected student, or the specified letter id did not match a known letter
+definitions:
+  ConnectionStatus:
+    description: The state of a student connection.
+    type: object
+    properties:
+      id:
+        format: uuid
+        description: The Id of the connection
+        type: string
+        example: 00000000-0000-0000-0000-000000000000
+      student:
+        $ref: '#/definitions/ConnectionStatusStudent'
+        description: A subset of the information available for the connected student
+      state:
+        description: The state of the connection
+        enum:
+          - Pending
+          - Accepted
+          - Rejected
+          - Canceled
+          - Revoked
+        type: string
+      scope:
+        description: The scope of the connection
+        enum:
+          - ReadOnly
+          - ReadWrite
+        type: string
+  ConnectionStatusStudent:
+    description: Subset of student information for inclusion in the ConnectionStatus response
+    type: object
+    properties:
+      id:
+        format: uuid
+        description: The Id of the student
+        type: string
+        example: 00000000-0000-0000-0000-000000000000
+      email:
+        description: The email address for the student
+        type: string
+  CreateConnectionRequest:
+    description: A request to create a new Connection
+    required:
+      - email
+      - scope
+    type: object
+    properties:
+      email:
+        description: The email of the student (5-100 characters)
+        maxLength: 100
+        minLength: 5
+        type: string
+      scope:
+        description: The scope of the connection (ReadOnly, ReadWrite)
+        type: string
+  School:
+    description: A school.
+    type: object
+    properties:
+      ipedsId:
+        description: The IPEDS Id of the school
+        type: string
+      name:
+        description: The name of the school, as it is displayed in IPEDS
+        type: string
+      state:
+        description: The two character abbreviation for the US state in which the school is located
+        type: string
+  Student:
+    description: A student.
+    type: object
+    properties:
+      id:
+        format: uuid
+        description: The Id of the student
+        type: string
+        example: 00000000-0000-0000-0000-000000000000
+      firstName:
+        description: The first name of the student
+        type: string
+      lastName:
+        description: The last name of the student
+        type: string
+      email:
+        description: The student's email address
+        type: string
+      address:
+        $ref: '#/definitions/Address'
+        description: The address of the student
+      demographics:
+        $ref: '#/definitions/StudentDemographics'
+        description: The demographics of the student
+      profile:
+        $ref: '#/definitions/StudentProfile'
+        description: The student's profile
+      connection:
+        $ref: '#/definitions/ConnectionStatus'
+        description: The connection to the student
+  Address:
+    description: An address.
+    required:
+      - city
+      - state
+      - zipCode
+    type: object
+    properties:
+      city:
+        description: The city (3-50 characters)
+        maxLength: 50
+        minLength: 3
+        type: string
+      state:
+        description: The two character US state abbreviation
+        maxLength: 2
+        minLength: 0
+        type: string
+      zipCode:
+        description: The 5 digit, or 5 digit plus 4 zip code (XXXXX or XXXXX-YYYY)
+        pattern: ^\d{5}(-\d{4})?$
+        type: string
+  StudentDemographics:
+    description: Student demographic information.
+    type: object
+    properties:
+      gender:
+        description: The gender of the student (Unknown, Male, Female, NonBinary)
+        enum:
+          - Unknown
+          - Male
+          - Female
+          - NonBinary
+        type: string
+      ethnicities:
+        description: The ethnicity of the student (Unknown, NativeAmericanOrAlaskaNative, Asian, BlackOrAfricanAmerican, HawaiianOrPacificIslander, WhiteOrCaucasian, ChooseNotToIdentify)
+        type: array
+        items:
+          enum:
+            - Unknown
+            - NativeAmericanOrAlaskaNative
+            - Asian
+            - BlackOrAfricanAmerican
+            - HawaiianOrPacificIslander
+            - HispanicOrLatino
+            - WhiteOrCaucasian
+            - ChooseNotToIdentify
+          type: string
+      firstGeneration:
+        description: A value indicating whether the student is the first in their family to attend college
+        type: boolean
+      highSchool:
+        $ref: '#/definitions/HighSchool'
+        description: The student's high school
+  StudentProfile:
+    description: Student profile information.
+    required:
+      - efc
+      - gpa
+    type: object
+    properties:
+      efc:
+        format: int32
+        description: The student's EFC (Expected Family Contribution, 0-999999)
+        maximum: 999999
+        minimum: 0
+        type: integer
+      act:
+        format: int32
+        description: The student's highest ACT score (1-36)
+        maximum: 36
+        minimum: 1
+        type: integer
+      sat:
+        format: int32
+        description: The student's highest SAT score (400-1600)
+        maximum: 1600
+        minimum: 400
+        type: integer
+      gpa:
+        $ref: '#/definitions/GPA'
+        description: The student's GPA
+  HighSchool:
+    description: Student high school information.
+    type: object
+    properties:
+      name:
+        description: The name of the high school
+        type: string
+      type:
+        description: The type of the high school (Unknown, Public, Private, Charter, Homeschool)
+        enum:
+          - Unknown
+          - Public
+          - Private
+          - Charter
+          - Homeschool
+        type: string
+  GPA:
+    description: A grade point average.
+    required:
+      - highSchool
+    type: object
+    properties:
+      highSchool:
+        format: double
+        description: The student's most recent high school GPA (0.0-4.0)
+        maximum: 4
+        minimum: 0
+        type: number
+      college:
+        format: double
+        description: The student's college GPA (if applicable, 0.0-4.0)
+        maximum: 4
+        minimum: 0
+        type: number
+  CreateStudentRequest:
+    description: Creates a new student.
+    required:
+      - firstName
+      - lastName
+      - email
+      - address
+      - profile
+    type: object
+    properties:
+      firstName:
+        description: The first name of the student (1-50 characters)
+        maxLength: 50
+        minLength: 1
+        type: string
+      lastName:
+        description: The last name of the student (1-50 characters)
+        maxLength: 50
+        minLength: 1
+        type: string
+      email:
+        description: The student's email address (5-100 characters)
+        maxLength: 100
+        minLength: 5
+        type: string
+      address:
+        $ref: '#/definitions/Address'
+        description: The address of the student
+      demographics:
+        $ref: '#/definitions/StudentDemographics'
+        description: The demographics of the student
+      profile:
+        $ref: '#/definitions/StudentProfile'
+        description: The student's profile
+  UpdateStudentRequest:
+    description: Updates a student.
+    type: object
+    properties:
+      address:
+        $ref: '#/definitions/Address'
+        description: The address of the student
+      demographics:
+        $ref: '#/definitions/StudentDemographics'
+        description: The demographics of the student
+      profile:
+        $ref: '#/definitions/StudentProfile'
+        description: The student's profile
+  Letter:
+    description: An award letter.
+    type: object
+    properties:
+      id:
+        format: int32
+        description: The Id of the letter
+        type: integer
+      submitDate:
+        format: date-time
+        description: The date on which the letter was submitted to TuitionFit
+        type: string
+      applicationDate:
+        format: date-time
+        description: The date on which the college application was submitted
+        type: string
+      status:
+        description: The status of the letter (Deleted, Pending, NeedsAttention, Approved, Live)
+        enum:
+          - Deleted
+          - Pending
+          - NeedsAttention
+          - Approved
+          - Live
+        type: string
+      circumstances:
+        $ref: '#/definitions/LetterCircumstances'
+        description: The circumstances under which the letter was awarded
+      profile:
+        $ref: '#/definitions/StudentProfile'
+        description: The profile of the student
+      price:
+        $ref: '#/definitions/Price'
+        description: The college price
+      school:
+        $ref: '#/definitions/School'
+        description: The school which awarded the letter
+  LetterCircumstances:
+    description: Circumstances under which a letter may have been awarded
+    type: object
+    properties:
+      testOptional:
+        description: A value indicating whether test score(s) was or were optional
+        type: boolean
+      earlyDecision:
+        description: A value indicating whether the letter was awarded by early decision
+        type: boolean
+      earlyAction:
+        description: A value indicating whether the letter was awarded by early action
+        type: boolean
+  Price:
+    description: A college price.
+    type: object
+    properties:
+      year:
+        description: The year in which the price is or was effective
+        type: string
+      tuition:
+        format: double
+        description: The total tuition amount
+        type: number
+      loans:
+        format: double
+        description: The total of all loans
+        type: number
+      grants:
+        format: double
+        description: The total of all grants and awards
+        type: number
+      amountDue:
+        format: double
+        description: The total amount due (tuition less grants and loans)
+        type: number
+        readOnly: true
+      stickerPrice:
+        $ref: '#/definitions/StickerPrice'
+        description: The original sticker (advertised) price
+  StickerPrice:
+    description: A college sticker (advertised) price
+    type: object
+    properties:
+      year:
+        description: The year in which the price is or was effective
+        type: string
+      tuition:
+        format: double
+        description: The total tuition amount
+        type: number
+  CreateLetterRequest:
+    required:
+      - ipedsId
+      - imageBase64
+    type: object
+    properties:
+      ipedsId:
+        type: string
+      applicationDate:
+        format: date-time
+        type: string
+      circumstances:
+        $ref: '#/definitions/LetterCircumstances'
+      profile:
+        $ref: '#/definitions/StudentProfile'
+      imageBase64:
+        type: string
+  LetterImages:
+    description: The images associated with an award letter
+    type: object
+    properties:
+      original:
+        description: The URL to the original, un-redacted letter image
+        type: string
+      redacted:
+        description: The URL to the redacted letter image
+        type: string
+securityDefinitions:
+  APIKey:
+    type: apiKey
+    description: API Key Authentication
+    name: X-API-Key
+    in: header
