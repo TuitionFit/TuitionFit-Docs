@@ -10,8 +10,8 @@ paths:
     get:
       tags:
         - PartnerConnections
-      summary: Gets all connections for the calling service account.
-      operationId: PartnerConnections_GetConnections
+      summary: Get all connections
+      operationId: PartnerConnections_GetAll
       consumes: []
       produces:
         - application/json
@@ -21,17 +21,17 @@ paths:
       parameters:
         - name: state
           in: query
-          description: An optional ConnectionState by which to filter the connections (Pending, Accepted, Rejected, Canceled, Revoked).
+          description: An optional ConnectionState used to filter the connections (Pending, Accepted, Rejected, Canceled, Revoked)
           required: false
           type: string
         - name: studentId
           in: query
-          description: An optional student ID for which to search.
+          description: An optional student ID by which to search
           required: false
           type: string
         - name: studentEmail
           in: query
-          description: An optional student Email for which to search.
+          description: An optional student Email by which to search
           required: false
           type: string
       responses:
@@ -46,8 +46,8 @@ paths:
     post:
       tags:
         - PartnerConnections
-      summary: Creates a new connection.
-      operationId: PartnerConnections_CreateConnection
+      summary: Create a new connection
+      operationId: PartnerConnections_Create
       consumes:
         - application/json
         - text/json
@@ -62,7 +62,7 @@ paths:
       parameters:
         - name: request
           in: body
-          description: The connection request.
+          description: The connection request
           required: true
           schema:
             $ref: '#/definitions/CreateConnectionRequest'
@@ -87,8 +87,8 @@ paths:
     get:
       tags:
         - PartnerConnections
-      summary: Gets a single connection by id.
-      operationId: PartnerConnections_GetConnection
+      summary: Get a single connection
+      operationId: PartnerConnections_Get
       consumes: []
       produces:
         - application/json
@@ -98,7 +98,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the connection.
+          description: The unique identifier of the connection
           required: true
           type: string
       responses:
@@ -113,8 +113,8 @@ paths:
     delete:
       tags:
         - PartnerConnections
-      summary: Cancels or revokes an existing connection.
-      operationId: PartnerConnections_TerminateConnection
+      summary: Cancel or revoke an existing connection
+      operationId: PartnerConnections_Terminate
       consumes: []
       produces:
         - application/json
@@ -124,7 +124,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the connection.
+          description: The unique identifier of the connection
           required: true
           type: string
       responses:
@@ -142,8 +142,8 @@ paths:
     get:
       tags:
         - PartnerHealth
-      summary: Checks the health of the Partner API.
-      operationId: PartnerHealth_Index
+      summary: Check the health of the Partner API
+      operationId: PartnerHealth_Check
       consumes: []
       produces:
         - application/json
@@ -163,8 +163,8 @@ paths:
     get:
       tags:
         - PartnerSchools
-      summary: Gets a list of all known schools.
-      operationId: PartnerSchools_Index
+      summary: Get a list of all known schools.
+      operationId: PartnerSchools_GetAll
       consumes: []
       produces:
         - application/json
@@ -195,7 +195,7 @@ paths:
     get:
       tags:
         - PartnerSchools
-      summary: Gets a school by its IPEDS Id.
+      summary: Get a single school
       operationId: PartnerSchools_Get
       consumes: []
       produces:
@@ -206,7 +206,7 @@ paths:
       parameters:
         - name: ipedsid
           in: path
-          description: The IPEDS Id of the school to retrieve.
+          description: The IPEDS Id of the school
           required: true
           type: string
       responses:
@@ -220,8 +220,8 @@ paths:
     get:
       tags:
         - PartnerStudents
-      summary: Gets all students to which the calling user has an approved connection.
-      operationId: PartnerStudents_GetStudents
+      summary: Get all students
+      operationId: PartnerStudents_GetAll
       consumes: []
       produces:
         - application/json
@@ -231,7 +231,7 @@ paths:
       parameters:
         - name: email
           in: query
-          description: An optional email search string by which to filter the students.
+          description: An optional email string by which search
           required: false
           type: string
       responses:
@@ -244,8 +244,8 @@ paths:
     post:
       tags:
         - PartnerStudents
-      summary: Creates a new student.
-      operationId: PartnerStudents_CreateStudent
+      summary: Create a new student
+      operationId: PartnerStudents_Create
       consumes:
         - application/json
         - text/json
@@ -260,7 +260,7 @@ paths:
       parameters:
         - name: request
           in: body
-          description: The student request.
+          description: The student request
           required: true
           schema:
             $ref: '#/definitions/CreateStudentRequest'
@@ -283,8 +283,8 @@ paths:
     get:
       tags:
         - PartnerStudents
-      summary: Gets a single student by id.
-      operationId: PartnerStudents_GetStudent
+      summary: Get a single student
+      operationId: PartnerStudents_Get
       consumes: []
       produces:
         - application/json
@@ -294,7 +294,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the student.
+          description: The unique identifier of the student
           required: true
           type: string
       responses:
@@ -311,8 +311,8 @@ paths:
     put:
       tags:
         - PartnerStudents
-      summary: Updates a student.
-      operationId: PartnerStudents_UpdateStudent
+      summary: Update a student
+      operationId: PartnerStudents_Update
       consumes:
         - application/json
         - text/json
@@ -327,12 +327,12 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the student.
+          description: The unique identifier of the student
           required: true
           type: string
         - name: request
           in: body
-          description: The update request.
+          description: The update request
           required: true
           schema:
             $ref: '#/definitions/UpdateStudentRequest'
@@ -353,8 +353,8 @@ paths:
     get:
       tags:
         - PartnerStudents
-      summary: Gets all letters for the specified student.
-      operationId: PartnerStudents_GetStudentLetters
+      summary: Get all letters for a student
+      operationId: PartnerStudents_GetLetters
       consumes: []
       produces:
         - application/json
@@ -364,7 +364,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the student.
+          description: The unique identifier of the student
           required: true
           type: string
       responses:
@@ -383,8 +383,8 @@ paths:
     post:
       tags:
         - PartnerStudents
-      summary: Creates a student letter.
-      operationId: PartnerStudents_CreateStudentLetter
+      summary: Create a letter
+      operationId: PartnerStudents_CreateLetter
       consumes:
         - application/json
         - text/json
@@ -399,12 +399,12 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the student.
+          description: The unique identifier of the student.
           required: true
           type: string
         - name: request
           in: body
-          description: The create request.
+          description: The letter request
           required: true
           schema:
             $ref: '#/definitions/CreateLetterRequest'
@@ -429,8 +429,8 @@ paths:
     get:
       tags:
         - PartnerStudents
-      summary: Gets a single letter for the specified student, by id.
-      operationId: PartnerStudents_GetStudentLetter
+      summary: Gets a single letter for a student
+      operationId: PartnerStudents_GetLetter
       consumes: []
       produces:
         - application/json
@@ -440,12 +440,12 @@ paths:
       parameters:
         - name: studentId
           in: path
-          description: The unique identifier for the student.
+          description: The unique identifier of the student
           required: true
           type: string
         - name: letterId
           in: path
-          description: The unique identifier for the letter.
+          description: The unique identifier of the letter
           required: true
           type: string
       responses:
@@ -463,8 +463,8 @@ paths:
     get:
       tags:
         - PartnerStudents
-      summary: Gets a URL for the images for a single letter for the specified student, by id.
-      operationId: PartnerStudents_GetStudentLetterImages
+      summary: Get the URLs for letter images
+      operationId: PartnerStudents_GetLetterImages
       consumes: []
       produces:
         - application/json
@@ -474,12 +474,12 @@ paths:
       parameters:
         - name: studentId
           in: path
-          description: The unique identifier for the student.
+          description: The unique identifier of the student.
           required: true
           type: string
         - name: letterId
           in: path
-          description: The unique identifier for the letter.
+          description: The unique identifier of the letter.
           required: true
           type: string
       responses:
