@@ -9,9 +9,9 @@ paths:
   /api/partner/connections:
     get:
       tags:
-        - PartnerConnections
+        - Connections
       summary: Get all connections
-      operationId: PartnerConnections_GetAll
+      operationId: Partner.Connections.GetAll
       consumes: []
       produces:
         - application/json
@@ -45,9 +45,9 @@ paths:
           description: The specified state is not a valid state, or the specified student id is not in a valid format
     post:
       tags:
-        - PartnerConnections
+        - Connections
       summary: Create a new connection
-      operationId: PartnerConnections_Create
+      operationId: Partner.Connections.Create
       consumes:
         - application/json
         - text/json
@@ -86,9 +86,9 @@ paths:
   /api/partner/connections/{id}:
     get:
       tags:
-        - PartnerConnections
+        - Connections
       summary: Get a single connection
-      operationId: PartnerConnections_Get
+      operationId: Partner.Connections.Get
       consumes: []
       produces:
         - application/json
@@ -112,9 +112,9 @@ paths:
           description: The specified connection id did not match a known connection
     delete:
       tags:
-        - PartnerConnections
+        - Connections
       summary: Cancel or revoke an existing connection
-      operationId: PartnerConnections_Terminate
+      operationId: Partner.Connections.Terminate
       consumes: []
       produces:
         - application/json
@@ -141,9 +141,9 @@ paths:
   /api/partner/health:
     get:
       tags:
-        - PartnerHealth
+        - Health
       summary: Check the health of the Partner API
-      operationId: PartnerHealth_Check
+      operationId: Partner.Health.Check
       consumes: []
       produces:
         - application/json
@@ -162,9 +162,9 @@ paths:
   /api/partner/schools:
     get:
       tags:
-        - PartnerSchools
+        - Schools
       summary: Get a list of all known schools.
-      operationId: PartnerSchools_GetAll
+      operationId: Partner.Schools.GetAll
       consumes: []
       produces:
         - application/json
@@ -194,9 +194,9 @@ paths:
   /api/partner/schools/{ipedsid}:
     get:
       tags:
-        - PartnerSchools
+        - Schools
       summary: Get a single school
-      operationId: PartnerSchools_Get
+      operationId: Partner.Schools.Get
       consumes: []
       produces:
         - application/json
@@ -219,9 +219,9 @@ paths:
   /api/partner/students:
     get:
       tags:
-        - PartnerStudents
+        - Students
       summary: Get all students
-      operationId: PartnerStudents_GetAll
+      operationId: Partner.Students.GetAll
       consumes: []
       produces:
         - application/json
@@ -243,9 +243,9 @@ paths:
               $ref: '#/definitions/Student'
     post:
       tags:
-        - PartnerStudents
+        - Students
       summary: Create a new student
-      operationId: PartnerStudents_Create
+      operationId: Partner.Students.Create
       consumes:
         - application/json
         - text/json
@@ -282,9 +282,9 @@ paths:
   /api/partner/students/{id}:
     get:
       tags:
-        - PartnerStudents
+        - Students
       summary: Get a single student
-      operationId: PartnerStudents_Get
+      operationId: Partner.Students.Get
       consumes: []
       produces:
         - application/json
@@ -310,9 +310,9 @@ paths:
           description: The specified student id did not match a connected student
     put:
       tags:
-        - PartnerStudents
+        - Students
       summary: Update a student
-      operationId: PartnerStudents_Update
+      operationId: Partner.Students.Update
       consumes:
         - application/json
         - text/json
@@ -352,9 +352,9 @@ paths:
   /api/partner/students/{id}/letters:
     get:
       tags:
-        - PartnerStudents
+        - Students
       summary: Get all letters for a student
-      operationId: PartnerStudents_GetLetters
+      operationId: Partner.Students.GetLetters
       consumes: []
       produces:
         - application/json
@@ -382,9 +382,9 @@ paths:
           description: The specified student id did not match a connected student
     post:
       tags:
-        - PartnerStudents
+        - Students
       summary: Create a letter
-      operationId: PartnerStudents_CreateLetter
+      operationId: Partner.Students.CreateLetter
       consumes:
         - application/json
         - text/json
@@ -428,9 +428,9 @@ paths:
   /api/partner/students/{studentId}/letters/{letterId}:
     get:
       tags:
-        - PartnerStudents
+        - Students
       summary: Gets a single letter for a student
-      operationId: PartnerStudents_GetLetter
+      operationId: Partner.Students.GetLetter
       consumes: []
       produces:
         - application/json
@@ -462,9 +462,9 @@ paths:
   /api/partner/students/{studentId}/letters/{letterId}/images:
     get:
       tags:
-        - PartnerStudents
+        - Students
       summary: Get the URLs for letter images
-      operationId: PartnerStudents_GetLetterImages
+      operationId: Partner.Students.GetLetterImages
       consumes: []
       produces:
         - application/json
