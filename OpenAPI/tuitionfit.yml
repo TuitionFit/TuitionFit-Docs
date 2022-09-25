@@ -429,7 +429,7 @@ paths:
     get:
       tags:
         - Students
-      summary: Gets a single letter for a student
+      summary: Get a single letter for a student
       operationId: Partner.Students.GetLetter
       consumes: []
       produces:
@@ -463,7 +463,7 @@ paths:
     get:
       tags:
         - Students
-      summary: Get the URLs for letter images
+      summary: Get the URL for the image associated with a letter
       operationId: Partner.Students.GetLetterImages
       consumes: []
       produces:
@@ -486,7 +486,7 @@ paths:
         '200':
           description: The request completed successfully
           schema:
-            $ref: '#/definitions/LetterImages'
+            type: string
         '400':
           description: The one or more of the specified student or letter ids is not in a valid format
           schema:
@@ -843,31 +843,29 @@ definitions:
         description: The total tuition amount
         type: number
   CreateLetterRequest:
+    description: Creates a student letter.
     required:
       - ipedsId
       - imageBase64
     type: object
     properties:
       ipedsId:
+        description: The IPEDS Id of the school
         type: string
       applicationDate:
         format: date-time
+        description: The date on which the application was submitted
         type: string
       circumstances:
         $ref: '#/definitions/LetterCircumstances'
+        description: The circumstances under which the application was submitted
       profile:
         $ref: '#/definitions/StudentProfile'
+        description: The student's profile at the time the application was submitted
       imageBase64:
-        type: string
-  LetterImages:
-    description: The images associated with an award letter
-    type: object
-    properties:
-      original:
-        description: The URL to the original, un-redacted letter image
-        type: string
-      redacted:
-        description: The URL to the redacted letter image
+        description: The Base64 encoded binary image data. Supports PNG and JPEG of sizes up to roughly 5mb before encoding.
+        maximum: 6990508
+        minimum: 1
         type: string
 securityDefinitions:
   APIKey:
