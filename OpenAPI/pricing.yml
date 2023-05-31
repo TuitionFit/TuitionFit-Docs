@@ -1,0 +1,132 @@
+openapi: 3.0.3
+info:
+  title: TuitionFit Pricing
+  description: |-
+    TBD
+  termsOfService: http://tuitionfit.org/terms/
+  contact:
+    email: support@tuitionfit.org
+  version: v0
+externalDocs:
+  url: http://docs.tuitionfit.org
+servers:
+  - url: https://api.tuitionfit.org/pricing/v0
+paths:
+  /:
+    post:
+      description: Submit a pricing request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PricingRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PricingResponse'          
+        '400':
+          description: Invalid request
+        '404':
+          description: Specified school not found/supported
+        '429':
+          description: Too many requests (throttled)
+components:
+  schemas:
+    PricingRequest:
+      type: object
+      properties:
+        school:
+          $ref: '#/components/schemas/PricingRequestSchool'
+        student:
+          $ref: '#/components/schemas/PricingRequestStudent'
+      required: ["school", "student"]
+    PricingRequestSchool:
+      type: object
+      properties:
+        ipedsId:
+          type: string
+          example: 215284
+      required: ["ipedsId"]
+    PricingRequestStudent:
+      type: object
+      properties:
+        address:
+          $ref: '#/components/schemas/PricingRequestStudentAddress'
+        profile:
+          $ref: '#/components/schemas/PricingRequestStudentProfile'
+      required: ["profile"]
+    PricingRequestStudentAddress:
+      type: object
+      properties:
+        city:
+          type: string
+          example: Palo Alto
+        state:
+          type: string
+          example: CA
+          default: State of specified school
+        zip:
+          type: string
+          example: '94301'
+    PricingRequestStudentProfile:
+      type: object
+      properties:
+        efc:
+          type: integer
+          minimum: 0
+          maximum: 999999
+          example: 10000
+        act:
+          type: integer
+          minimum: 1
+          maximum: 36
+          example: 36
+        sat:
+          type: integer
+          minimum: 400
+          maximum: 1600
+          example: 1600
+        gpa:
+          $ref: '#/components/schemas/PricingRequestStudentProfileGpa'
+      required: ["efc"]
+    PricingRequestStudentProfileGpa:
+      type: object
+      properties:
+        highSchool:
+          type: number
+          minimum: 0.0
+          maximum: 4.0
+          example: 4.0
+        college:
+          type: number
+          minimum: 0.0
+          maximum: 4.0
+          example: 4.0
+      required: ["highSchool"]
+    PricingResponse:
+      type: object
+      properties:
+        school:
+          $ref: '#/components/schemas/PricingResponseSchool'
+        prices:
+          type: object
+          properties:
+            lower:
+              type: integer
+            upper:
+              type: integer
+    PricingResponseSchool:
+      type: object
+      properties:
+        ipedsId:
+          type: string
+        federalSchoolCode:
+          type: string
+        state:
+          type: string
+        name:
+          type: string
