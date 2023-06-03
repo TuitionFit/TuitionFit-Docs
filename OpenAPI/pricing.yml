@@ -31,9 +31,13 @@ paths:
         '400':
           description: Invalid request
         '404':
-          description: Specified school not found/supported
+          description: Specified school not found
         '429':
           description: Too many requests (throttled)
+        '452':
+          description: Insufficient data for school
+        '453':
+          description: School does not predominantly grant 4 year degrees
 components:
   schemas:
     PricingRequest:
