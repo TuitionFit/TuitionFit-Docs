@@ -4,7 +4,7 @@
     "version": "v0",
     "title": "TuitionFit"
   },
-  "host": "localhost:9163",
+  "host": "app.tuitionfit.org",
   "schemes": [
     "https"
   ],
