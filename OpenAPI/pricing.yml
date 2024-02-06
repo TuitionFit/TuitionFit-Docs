@@ -74,8 +74,8 @@ components:
           example: CA
           default: State of specified school
         zip:
-          type: string
-          example: '94301'
+          type: number
+          example: 94301
     PricingRequestStudentProfile:
       type: object
       properties:
