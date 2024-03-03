@@ -4,7 +4,7 @@
     "version": "v0",
     "title": "TuitionFit"
   },
-  "host": "localhost:9163",
+  "host": "app.tuitionfit.org",
   "schemes": [
     "https"
   ],
@@ -1085,7 +1085,7 @@
           "description": "The student's profile at the time the application was submitted"
         },
         "imageBase64": {
-          "description": "The Base64 encoded binary image data. Supports PNG and JPEG of sizes up to roughly 5mb before encoding.",
+          "description": "The Base64 encoded binary image data, as a data URI (e.g. data:image/jpeg;base64). Supports PNG and JPEG of sizes up to roughly 5mb before encoding.",
           "maxLength": 6990508,
           "minLength": 0,
           "type": "string"
@@ -1309,7 +1309,7 @@
           "description": "The student's profile at the time the application was submitted"
         },
         "imageBase64": {
-          "description": "The Base64 encoded binary image data. Supports PNG and JPEG of sizes up to roughly 5mb before encoding.",
+          "description": "The Base64 encoded binary image data, as a data URI (e.g. data:image/jpeg;base64). Supports PNG and JPEG of sizes up to roughly 5mb before encoding.",
           "maxLength": 6990508,
           "minLength": 0,
           "type": "string"
