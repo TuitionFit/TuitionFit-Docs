@@ -936,16 +936,16 @@
     "StudentProfile": {
       "description": "Student profile information.",
       "required": [
-        "efc",
+        "sai",
         "gpa"
       ],
       "type": "object",
       "properties": {
-        "efc": {
+        "sai": {
           "format": "int32",
-          "description": "The student's EFC (Expected Family Contribution, 0-999999)",
+          "description": "The student's SAI (Student Aid Index, -1501-999999)",
           "maximum": 999999,
-          "minimum": 0,
+          "minimum": -1501,
           "type": "integer"
         },
         "act": {
