@@ -4,7 +4,7 @@
     "version": "v0",
     "title": "TuitionFit"
   },
-  "host": "app.tuitionfit.org",
+  "host": "localhost:9163",
   "schemes": [
     "https"
   ],
@@ -1087,6 +1087,12 @@
         "imageBase64": {
           "description": "The Base64 encoded binary image data, as a data URI (e.g. data:image/jpeg;base64). Supports PNG and JPEG of sizes up to roughly 5mb before encoding.",
           "maxLength": 6990508,
+          "minLength": 0,
+          "type": "string"
+        },
+        "source": {
+          "description": "An optional string that indicates the source of the letter.",
+          "maxLength": 128,
           "minLength": 0,
           "type": "string"
         }
