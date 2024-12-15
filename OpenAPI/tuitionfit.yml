@@ -1089,6 +1089,12 @@
           "maxLength": 6990508,
           "minLength": 0,
           "type": "string"
+        },
+        "source": {
+          "description": "An optional string that indicates the source of the letter.",
+          "maxLength": 128,
+          "minLength": 0,
+          "type": "string"
         }
       }
     },
