@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { schools } from '../data/schools';
-import { TuitionFitLetterRequest } from '../types';
+import { TuitionFitLetterRequest, TuitionFitLetterResponse } from '../types';
 import { submitLetter, getLetterStatus } from '../lib/tuitionfitLetterAPI';
 
 export default function Home() {
@@ -37,6 +37,36 @@ export default function Home() {
     message: string;
   }>({ type: null, message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittedLetterId, setSubmittedLetterId] = useState<string | null>(null);
+  const [letterStatus, setLetterStatus] = useState<TuitionFitLetterResponse | null>(null);
+  const [isPolling, setIsPolling] = useState(false);
+
+  // Poll for letter status when we have a submitted letter ID
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    if (submittedLetterId && isPolling) {
+      intervalId = setInterval(async () => {
+        try {
+          const status = await getLetterStatus(submittedLetterId);
+          setLetterStatus(status);
+          
+          // Stop polling when status is COMPLETE
+          if (status.status === 'COMPLETE') {
+            setIsPolling(false);
+          }
+        } catch (error) {
+          console.error('Failed to fetch letter status:', error);
+        }
+      }, 1000); // Poll every 1 second
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [submittedLetterId, isPolling]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,6 +87,8 @@ export default function Home() {
       const response = await submitLetter(submissionData);
 
       console.log(response);
+      setSubmittedLetterId(response);
+      setIsPolling(true);
       setSubmissionStatus({
         type: 'success',
         message: `Letter submitted successfully! ID: ${response}`
@@ -91,22 +123,67 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <form
-        className="bg-white p-8 rounded shadow-md flex flex-col gap-4 w-full max-w-lg text-gray-900"
-        onSubmit={handleSubmit}
-      >
-        <h2 className="text-xl font-bold mb-4">TuitionFit Letter Request</h2>
-        
-        {/* Submission Status Message */}
-        {submissionStatus.type && (
-          <div className={`p-3 rounded mb-4 ${
-            submissionStatus.type === 'success' 
-              ? 'bg-green-100 text-green-700 border border-green-300' 
-              : 'bg-red-100 text-red-700 border border-red-300'
-          }`}>
-            {submissionStatus.message}
+      {submittedLetterId ? (
+        // Status Card - shown after successful submission
+        <div className="bg-white p-8 rounded shadow-md w-full max-w-lg text-gray-900">
+          <h2 className="text-xl font-bold mb-4">Letter Submission Status</h2>
+          
+          <div className="mb-4">
+            <p className="text-green-700 bg-green-100 p-3 rounded border border-green-300">
+              Letter submitted successfully! ID: {submittedLetterId}
+            </p>
           </div>
-        )}
+
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold mb-2">Current Status:</h3>
+            {letterStatus ? (
+              <div>
+                <div className={`p-2 rounded mb-2 ${
+                  letterStatus.status === 'COMPLETE' 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-yellow-100 text-yellow-800'
+                }`}>
+                  Status: {letterStatus.status}
+                </div>
+                <pre className="bg-gray-100 p-4 rounded text-sm overflow-auto max-h-96">
+                  {JSON.stringify(letterStatus, null, 2)}
+                </pre>
+              </div>
+            ) : (
+              <div className="bg-gray-100 p-4 rounded">
+                Loading status...
+              </div>
+            )}
+          </div>
+
+          {letterStatus?.status === 'COMPLETE' && (
+            <button
+              onClick={() => {
+                setSubmittedLetterId(null);
+                setLetterStatus(null);
+                setIsPolling(false);
+                setSubmissionStatus({ type: null, message: '' });
+              }}
+              className="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700 transition"
+            >
+              Submit Another Letter
+            </button>
+          )}
+        </div>
+      ) : (
+        // Form - shown initially and after reset
+        <form
+          className="bg-white p-8 rounded shadow-md flex flex-col gap-4 w-full max-w-lg text-gray-900"
+          onSubmit={handleSubmit}
+        >
+          <h2 className="text-xl font-bold mb-4">TuitionFit Letter Request</h2>
+          
+          {/* Submission Status Message */}
+          {submissionStatus.type && submissionStatus.type === 'error' && (
+            <div className="bg-red-100 text-red-700 border border-red-300 p-3 rounded mb-4">
+              {submissionStatus.message}
+            </div>
+          )}
         
         {/* School Selection */}
         <label className="flex flex-col gap-1">
@@ -269,6 +346,7 @@ export default function Home() {
           {isSubmitting ? 'Submitting...' : 'Submit Letter Request'}
         </button>
       </form>
+      )}
     </div>
   );
 }
