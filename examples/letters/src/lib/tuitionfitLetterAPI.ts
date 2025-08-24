@@ -1,8 +1,8 @@
 import axios from 'axios'; 
 import { TuitionFitLetterRequest, TuitionFitLetterResponse } from '../types';
 
-const TUITIONFIT_LETTER_URL='http://localhost:3000/letters'
-const TUITIONFIT_API_KEY=''
+const TUITIONFIT_LETTER_URL='<redacted>'
+const TUITIONFIT_API_KEY='<redacted>'
 
 export const submitLetter = async (request: TuitionFitLetterRequest): Promise<string> => {
   const response = await axios.post(TUITIONFIT_LETTER_URL, request, {

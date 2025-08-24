@@ -22,6 +22,7 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ## How to Use
 
+1. Obtain the values for `TUITIONFIT_LETTER_URL` and `TUITIONFIT_API_KEY` from TuitionFit, and replace the `<redacted>` values in the `tuitionfitLetterAPI.ts` file
 1. Start the app
 1. Select a school from the drop-down
 1. Enter a valid, 2 character state
