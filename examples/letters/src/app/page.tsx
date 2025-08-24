@@ -1,103 +1,274 @@
-import Image from "next/image";
+'use client'
+
+import { useState } from "react";
+import { schools } from '../data/schools';
+import { TuitionFitLetterRequest } from '../types';
+import { submitLetter, getLetterStatus } from '../lib/tuitionfitLetterAPI';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [formData, setFormData] = useState<TuitionFitLetterRequest>({
+    school: { ipedsId: "" },
+    student: {
+      email: "",
+      address: {
+        city: "",
+        state: "",
+        zip: ""
+      },
+      profile: {
+        efc: 0,
+        act: undefined,
+        sat: undefined,
+        gpa: {
+          highSchool: 0,
+          college: undefined
+        }
+      }
+    },
+    letter: {
+      date: new Date(),
+      imageBase64: ""
+    }
+  });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submissionStatus, setSubmissionStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setIsSubmitting(true);
+    setSubmissionStatus({ type: null, message: '' });
+
+    const submissionData: TuitionFitLetterRequest = {
+      ...formData,
+      letter: {
+        ...formData.letter,
+        date: undefined,
+        imageBase64: formData.letter?.imageBase64 || ""
+      }
+    };
+
+    try {
+      const response = await submitLetter(submissionData);
+
+      console.log(response);
+      setSubmissionStatus({
+        type: 'success',
+        message: `Letter submitted successfully! ID: ${response}`
+      });
+      console.log("Letter submitted successfully:", response);
+    } catch (error) {
+      setSubmissionStatus({
+        type: 'error',
+        message: `Failed to submit letter: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+      console.error("Failed to submit letter:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const updateFormData = (path: string, value: unknown) => {
+    setFormData(prev => {
+      const newData = { ...prev };
+      const keys = path.split('.');
+      let current: Record<string, unknown> = newData as Record<string, unknown>;
+      
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) current[keys[i]] = {};
+        current = current[keys[i]] as Record<string, unknown>;
+      }
+      
+      current[keys[keys.length - 1]] = value;
+      return newData;
+    });
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <form
+        className="bg-white p-8 rounded shadow-md flex flex-col gap-4 w-full max-w-lg text-gray-900"
+        onSubmit={handleSubmit}
+      >
+        <h2 className="text-xl font-bold mb-4">TuitionFit Letter Request</h2>
+        
+        {/* Submission Status Message */}
+        {submissionStatus.type && (
+          <div className={`p-3 rounded mb-4 ${
+            submissionStatus.type === 'success' 
+              ? 'bg-green-100 text-green-700 border border-green-300' 
+              : 'bg-red-100 text-red-700 border border-red-300'
+          }`}>
+            {submissionStatus.message}
+          </div>
+        )}
+        
+        {/* School Selection */}
+        <label className="flex flex-col gap-1">
+          School:
+          <select
+            value={formData.school?.ipedsId || ""}
+            onChange={e => updateFormData("school.ipedsId", e.target.value)}
+            className="border rounded px-2 py-1"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+            <option value="">Select a school</option>
+            {schools.map(school => 
+              <option key={school.ipedsId} value={school.ipedsId}>{school.name}</option>
+            )}
+          </select>
+        </label>
+
+        {/* Student Email */}
+        <label className="flex flex-col gap-1">
+          Email:
+          <input
+            type="email"
+            value={formData.student?.email || ""}
+            onChange={e => updateFormData("student.email", e.target.value)}
+            className="border rounded px-2 py-1"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+        </label>
+
+        {/* Student Address */}
+        <label className="flex flex-col gap-1">
+          City:
+          <input
+            type="text"
+            value={formData.student?.address?.city || ""}
+            onChange={e => updateFormData("student.address.city", e.target.value)}
+            className="border rounded px-2 py-1"
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+        </label>
+
+        <label className="flex flex-col gap-1">
+          State: *
+          <input
+            type="text"
+            value={formData.student?.address?.state || ""}
+            onChange={e => updateFormData("student.address.state", e.target.value.toUpperCase())}
+            className={`border rounded px-2 py-1 ${errors.state ? 'border-red-500' : ''}`}
+            maxLength={2}
           />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          {errors.state && <span className="text-red-500 text-sm">{errors.state}</span>}
+        </label>
+
+        <label className="flex flex-col gap-1">
+          ZIP Code:
+          <input
+            type="text"
+            value={formData.student?.address?.zip || ""}
+            onChange={e => updateFormData("student.address.zip", e.target.value)}
+            className="border rounded px-2 py-1"
+          />
+        </label>
+
+        {/* Student Profile */}
+        <label className="flex flex-col gap-1">
+          EFC (Expected Family Contribution): *
+          <input
+            type="number"
+            value={formData.student?.profile?.efc || 0}
+            onChange={e => updateFormData("student.profile.efc", parseInt(e.target.value) || 0)}
+            className={`border rounded px-2 py-1 ${errors.efc ? 'border-red-500' : ''}`}
+            min={0}
+            max={999999}
+          />
+          {errors.efc && <span className="text-red-500 text-sm">{errors.efc}</span>}
+        </label>
+
+        <label className="flex flex-col gap-1">
+          ACT Score:
+          <input
+            type="number"
+            value={formData.student?.profile?.act || ""}
+            onChange={e => updateFormData("student.profile.act", e.target.value ? parseInt(e.target.value) : undefined)}
+            className={`border rounded px-2 py-1 ${errors.act ? 'border-red-500' : ''}`}
+            min={1}
+            max={36}
+          />
+          {errors.act && <span className="text-red-500 text-sm">{errors.act}</span>}
+        </label>
+
+        <label className="flex flex-col gap-1">
+          SAT Score:
+          <input
+            type="number"
+            value={formData.student?.profile?.sat || ""}
+            onChange={e => updateFormData("student.profile.sat", e.target.value ? parseInt(e.target.value) : undefined)}
+            className={`border rounded px-2 py-1 ${errors.sat ? 'border-red-500' : ''}`}
+            min={400}
+            max={1600}
+          />
+          {errors.sat && <span className="text-red-500 text-sm">{errors.sat}</span>}
+        </label>
+
+        <label className="flex flex-col gap-1">
+          High School GPA: *
+          <input
+            type="number"
+            step="0.01"
+            value={formData.student?.profile?.gpa?.highSchool || 0}
+            onChange={e => updateFormData("student.profile.gpa.highSchool", parseFloat(e.target.value) || 0)}
+            className={`border rounded px-2 py-1 ${errors.highSchoolGpa ? 'border-red-500' : ''}`}
+            min={0}
+            max={4}
+          />
+          {errors.highSchoolGpa && <span className="text-red-500 text-sm">{errors.highSchoolGpa}</span>}
+        </label>
+
+        <label className="flex flex-col gap-1">
+          College GPA:
+          <input
+            type="number"
+            step="0.01"
+            value={formData.student?.profile?.gpa?.college || ""}
+            onChange={e => updateFormData("student.profile.gpa.college", e.target.value ? parseFloat(e.target.value) : undefined)}
+            className={`border rounded px-2 py-1 ${errors.collegeGpa ? 'border-red-500' : ''}`}
+            min={0}
+            max={4}
+          />
+          {errors.collegeGpa && <span className="text-red-500 text-sm">{errors.collegeGpa}</span>}
+        </label>
+
+        {/* Letter */}
+        <label className="flex flex-col gap-1">
+          Letter Date:
+          <input
+            type="date"
+            value={formData.letter?.date ? new Date(formData.letter.date).toISOString().split('T')[0] : ""}
+            onChange={e => updateFormData("letter.date", e.target.value ? new Date(e.target.value) : new Date())}
+            className="border rounded px-2 py-1"
+          />
+        </label>
+
+        <label className="flex flex-col gap-1">
+          Letter Image (Base64): *
+          <textarea
+            value={formData.letter?.imageBase64 || ""}
+            onChange={e => updateFormData("letter.imageBase64", e.target.value)}
+            className={`border rounded px-2 py-1 h-24 ${errors.imageBase64 ? 'border-red-500' : ''}`}
+            placeholder="Paste base64 image data here..."
+          />
+          {errors.imageBase64 && <span className="text-red-500 text-sm">{errors.imageBase64}</span>}
+        </label>
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className={`rounded px-4 py-2 transition text-white ${
+            isSubmitting 
+              ? 'bg-gray-400 cursor-not-allowed' 
+              : 'bg-blue-600 hover:bg-blue-700'
+          }`}
+        >
+          {isSubmitting ? 'Submitting...' : 'Submit Letter Request'}
+        </button>
+      </form>
     </div>
   );
 }
