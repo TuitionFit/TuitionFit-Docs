@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from "react";
+import { Turnstile } from '@marsidev/react-turnstile';
 import { schools } from '../data/schools';
 import { TuitionFitLetterRequest, TuitionFitLetterResponse } from '../types';
 import { submitLetter, getLetterStatus } from '../lib/tuitionfitLetterAPI';
@@ -40,6 +41,7 @@ export default function Home() {
   const [submittedLetterId, setSubmittedLetterId] = useState<string | null>(null);
   const [letterStatus, setLetterStatus] = useState<TuitionFitLetterResponse | null>(null);
   const [isPolling, setIsPolling] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   // Poll for letter status when we have a submitted letter ID
   useEffect(() => {
@@ -48,7 +50,7 @@ export default function Home() {
     if (submittedLetterId && isPolling) {
       intervalId = setInterval(async () => {
         try {
-          const status = await getLetterStatus(submittedLetterId);
+          const status = await getLetterStatus(submittedLetterId, turnstileToken);
           setLetterStatus(status);
           
           // Stop polling when status is COMPLETE
@@ -66,10 +68,19 @@ export default function Home() {
         clearInterval(intervalId);
       }
     };
-  }, [submittedLetterId, isPolling]);
+  }, [submittedLetterId, isPolling, turnstileToken]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Check if Turnstile token is available
+    if (!turnstileToken) {
+      setSubmissionStatus({
+        type: 'error',
+        message: 'Please complete the security verification'
+      });
+      return;
+    }
 
     setIsSubmitting(true);
     setSubmissionStatus({ type: null, message: '' });
@@ -84,7 +95,7 @@ export default function Home() {
     };
 
     try {
-      const response = await submitLetter(submissionData);
+      const response = await submitLetter(submissionData, turnstileToken);
 
       console.log(response);
       setSubmittedLetterId(response);
@@ -162,6 +173,7 @@ export default function Home() {
                 setSubmittedLetterId(null);
                 setLetterStatus(null);
                 setIsPolling(false);
+                setTurnstileToken(null);
                 setSubmissionStatus({ type: null, message: '' });
               }}
               className="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700 transition"
@@ -334,11 +346,22 @@ export default function Home() {
           {errors.imageBase64 && <span className="text-red-500 text-sm">{errors.imageBase64}</span>}
         </label>
 
+        {/* Cloudflare Turnstile */}
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium">Security Verification:</label>
+          <Turnstile
+            siteKey={"0x4AAAAAABukb7ZJheNLI8vf"} // this will probably change
+            onSuccess={(token) => setTurnstileToken(token)}
+            onError={() => setTurnstileToken(null)}
+            onExpire={() => setTurnstileToken(null)}
+          />
+        </div>
+
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || !turnstileToken}
           className={`rounded px-4 py-2 transition text-white ${
-            isSubmitting 
+            isSubmitting || !turnstileToken
               ? 'bg-gray-400 cursor-not-allowed' 
               : 'bg-blue-600 hover:bg-blue-700'
           }`}
