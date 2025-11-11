@@ -21,7 +21,7 @@ export type TuitionFitLetterRequest = {
       zip?: string;
     };
     profile: {
-      efc: number; // integer, 0-999999
+      sai: number; // integer, 0-999999
       act?: number; // integer, 1-36
       sat?: number; // integer, 400-1600
       gpa: {

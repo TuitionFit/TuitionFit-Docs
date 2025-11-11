@@ -79,7 +79,7 @@ components:
     PricingRequestStudentProfile:
       type: object
       properties:
-        efc:
+        sai:
           type: integer
           minimum: 0
           maximum: 999999
@@ -96,7 +96,7 @@ components:
           example: 1600
         gpa:
           $ref: '#/components/schemas/PricingRequestStudentProfileGpa'
-      required: ["efc"]
+      required: ["sai"]
     PricingRequestStudentProfileGpa:
       type: object
       properties:

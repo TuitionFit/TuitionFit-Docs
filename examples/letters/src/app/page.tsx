@@ -17,7 +17,7 @@ export default function Home() {
         zip: ""
       },
       profile: {
-        efc: 0,
+        sai: 0,
         act: undefined,
         sat: undefined,
         gpa: {
@@ -258,16 +258,16 @@ export default function Home() {
 
         {/* Student Profile */}
         <label className="flex flex-col gap-1">
-          EFC (Expected Family Contribution): *
+          SAI (Student Aid Index): *
           <input
             type="number"
-            value={formData.student?.profile?.efc || 0}
-            onChange={e => updateFormData("student.profile.efc", parseInt(e.target.value) || 0)}
-            className={`border rounded px-2 py-1 ${errors.efc ? 'border-red-500' : ''}`}
+            value={formData.student?.profile?.sai || 0}
+            onChange={e => updateFormData("student.profile.sai", parseInt(e.target.value) || 0)}
+            className={`border rounded px-2 py-1 ${errors.sai ? 'border-red-500' : ''}`}
             min={0}
             max={999999}
           />
-          {errors.efc && <span className="text-red-500 text-sm">{errors.efc}</span>}
+          {errors.sai && <span className="text-red-500 text-sm">{errors.sai}</span>}
         </label>
 
         <label className="flex flex-col gap-1">
